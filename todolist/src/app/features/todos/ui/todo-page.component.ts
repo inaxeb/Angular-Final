@@ -1,19 +1,27 @@
 import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { NgFor, NgIf } from '@angular/common';
+
 import { TodoStore } from '../data/todo.store';
-import { StatusLabelPipe } from '../pipes/status-label.pipe';
 import { AutofocusDirective } from '../directives/autofocus.directive';
-import { NgFor, NgIf, DatePipe } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { SearchTodosPipe } from '../pipes/search.pipe';
+import { TodoItemComponent } from './todo-item.component';
+
 @Component({
-  standalone: true,
-  imports: [FormsModule, RouterLink, StatusLabelPipe, AutofocusDirective, NgFor, NgIf, DatePipe],
-  template: `
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-2xl font-bold">My Todos</h2>
-    <div class="text-sm text-gray-600">Total: {{count()}} • Done: {{doneCount()}}</div>
+standalone: true,
+imports: [
+FormsModule,
+NgFor, NgIf,
+AutofocusDirective,
+SearchTodosPipe,
+TodoItemComponent
+],
+template: `
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-2xl font-bold">My Todos</h2>
+<div class="text-sm text-gray-600">Total: {{count()}} • Done: {{doneCount()}}</div>
   </div>
 
   <form (submit)="create()" class="grid md:grid-cols-4 gap-2 mb-4">
@@ -34,21 +42,12 @@ import { AuthService } from '../../../core/services/auth.service';
   </div>
 
   <div class="grid gap-2">
-    <div *ngFor="let t of filtered()" class="border rounded p-3 flex items-start justify-between">
-      <div class="space-y-1">
-        <a [routerLink]="['/todos', t.id]" class="font-semibold hover:underline">{{t.title}}</a>
-        <div class="text-sm text-gray-600" *ngIf="t.description">{{t.description}}</div>
-        <div class="text-xs text-gray-500">Status: {{t.status | statusLabel}} • {{t.createdAt | date:'short'}}</div>
-      </div>
-      <div class="flex items-center gap-2">
-        <select [(ngModel)]="t.status" (ngModelChange)="updateStatus(t.id, $event)" class="border p-1 rounded">
-          <option value="todo">todo</option>
-          <option value="doing">doing</option>
-          <option value="done">done</option>
-        </select>
-        <button class="px-2 py-1 bg-gray-200 rounded" (click)="remove(t.id)">Delete</button>
-      </div>
-    </div>
+    <app-todo-item
+      *ngFor="let t of (filtered() | searchTodos: term)"
+      [todo]="t"
+      (statusChange)="updateStatus(t.id, $event)"
+      (remove)="remove(t.id)">
+    </app-todo-item>
   </div>
   `
 })
@@ -67,12 +66,11 @@ export class TodoPageComponent {
   readonly projects = computed(() => this.store.listProjects());
 
   private base = computed(() => this.store.list());
+
   filtered = computed(() => {
     const me = this.auth.currentUser()?.id;
     const items = this.base();
-    const mine = this.onlyMine && me ? items.filter(t => t.ownerId === me) : items;
-    const q = this.term.toLowerCase();
-    return q ? mine.filter(t => t.title.toLowerCase().includes(q) || (t.description ?? '').toLowerCase().includes(q)) : mine;
+    return this.onlyMine && me ? items.filter(t => t.ownerId === me) : items;
   });
 
   create() {
