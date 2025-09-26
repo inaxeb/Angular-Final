@@ -5,20 +5,24 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NgIf } from '@angular/common';
 
 @Component({
-  standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, NgIf],
-  template: `
-  <div class="max-w-md mx-auto">
-    <h2 class="text-2xl font-bold mb-4">Login</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-3">
-      <input class="w-full border p-2 rounded" placeholder="Email" formControlName="email" />
-      <input class="w-full border p-2 rounded" placeholder="Password" type="password" formControlName="password" />
+standalone: true,
+imports: [ReactiveFormsModule, RouterLink, NgIf],
+template: `
+<div class="container-app">
+<div class="card max-w-md mx-auto mt-8">
+<h2 class="page-title mb-4">Connexion</h2>
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-3">
+<input class="input" placeholder="Email" formControlName="email" />
+<input class="input" placeholder="Mot de passe" type="password" formControlName="password" />
 
-      <p class="text-red-600" *ngIf="error()">{{error()}}</p>
+<p class="text-red-600 text-sm" *ngIf="error()">{{ error() }}</p>
 
-      <button class="px-4 py-2 bg-blue-600 text-white rounded" [disabled]="form.invalid">Login</button>
-      <a routerLink="/auth/register" class="ml-2 underline">Register</a>
-    </form>
+        <div class="flex items-center gap-2">
+          <button class="btn-primary" [disabled]="form.invalid">Se connecter</button>
+          <a routerLink="/auth/register" class="nav-link underline">Créer un compte</a>
+        </div>
+      </form>
+    </div>
   </div>
   `
 })
@@ -42,7 +46,7 @@ export class LoginComponent {
       this.auth.login(email!, password!);
       this.router.navigateByUrl('/todos');
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Login failed';
+      const msg = e instanceof Error ? e.message : 'Échec de la connexion';
       this.error.set(msg);
     }
   }

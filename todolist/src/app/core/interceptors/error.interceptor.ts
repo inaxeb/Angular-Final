@@ -7,7 +7,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) =>
 next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       console.error('HTTP Error', err);
-      inject(ErrorService).push(err.message || 'Unexpected HTTP error');
+      inject(ErrorService).push(err.message || 'Erreur HTTP inattendue');
       return throwError(() => err);
     })
   );

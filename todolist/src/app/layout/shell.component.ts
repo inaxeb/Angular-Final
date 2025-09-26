@@ -16,17 +16,17 @@ template: `
 <div *ngIf="error()" class="fixed top-2 right-2 bg-red-600 text-white px-3 py-2 rounded shadow z-50"
 role="alert" aria-live="assertive">
 {{ error() }}
-    <button class="ml-2 underline" (click)="clearError()" aria-label="Close">x</button>
+    <button class="ml-2 underline" (click)="clearError()" aria-label="Fermer">x</button>
   </div>
 
   <div class="min-h-screen flex flex-col">
     <header class="border-b p-4 flex items-center justify-between bg-gray-50">
       <h1 class="text-xl font-bold">Todolist Pro</h1>
       <nav class="flex items-center gap-4">
-        <a routerLink="/todos" class="hover:underline">Todos</a>
+        <a routerLink="/todos" class="hover:underline">Tâches</a>
         <a *ngIf="isAdmin()" routerLink="/admin" class="hover:underline">Admin</a>
-        <a *ngIf="!isLogged()" routerLink="/auth/login" class="px-3 py-1 rounded bg-blue-600 text-white">Login</a>
-        <button *ngIf="isLogged()" (click)="logout()" class="px-3 py-1 rounded bg-gray-800 text-white">Logout</button>
+        <a *ngIf="!isLogged()" routerLink="/auth/login" class="px-3 py-1 rounded bg-blue-600 text-white">Connexion</a>
+        <button *ngIf="isLogged()" (click)="logout()" class="px-3 py-1 rounded bg-gray-800 text-white">Déconnexion</button>
       </nav>
     </header>
 

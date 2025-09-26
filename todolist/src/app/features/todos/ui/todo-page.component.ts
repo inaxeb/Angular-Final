@@ -12,32 +12,29 @@ import { TodoItemComponent } from './todo-item.component';
 @Component({
 standalone: true,
 imports: [
-FormsModule,
-NgFor, NgIf,
-AutofocusDirective,
-SearchTodosPipe,
-TodoItemComponent
+FormsModule, NgFor, NgIf, AutofocusDirective,
+SearchTodosPipe, TodoItemComponent
 ],
 template: `
 <div class="flex items-center justify-between mb-4">
-<h2 class="text-2xl font-bold">My Todos</h2>
-<div class="text-sm text-gray-600">Total: {{count()}} • Done: {{doneCount()}}</div>
+<h2 class="text-2xl font-bold">Mes tâches</h2>
+<div class="text-sm text-gray-600">Total : {{count()}} • Terminé : {{doneCount()}}</div>
   </div>
 
   <form (submit)="create()" class="grid md:grid-cols-4 gap-2 mb-4">
-    <input appAutofocus [(ngModel)]="title" name="title" class="border p-2 rounded" placeholder="New todo title" required />
-    <input [(ngModel)]="description" name="description" class="border p-2 rounded" placeholder="Description (optional)" />
-    <select [(ngModel)]="projectId" name="projectId" class="border p-2 rounded">
-      <option [ngValue]="undefined">No project</option>
+    <input appAutofocus [(ngModel)]="title" name="title" class="input" placeholder="Titre de la tâche" required />
+    <input [(ngModel)]="description" name="description" class="input" placeholder="Description (optionnel)" />
+    <select [(ngModel)]="projectId" name="projectId" class="select">
+      <option [ngValue]="undefined">Aucun projet</option>
       <option *ngFor="let p of projects()" [value]="p.id">{{p.name}}</option>
     </select>
-    <button class="px-4 py-2 bg-green-600 text-white rounded">Add</button>
+    <button class="btn-primary">Ajouter</button>
   </form>
 
   <div class="flex items-center gap-2 mb-3">
-    <input [(ngModel)]="term" name="term" class="border p-2 rounded flex-1" placeholder="Search..." />
+    <input [(ngModel)]="term" name="term" class="input flex-1" placeholder="Rechercher..." />
     <label class="text-sm flex items-center gap-2">
-      <input type="checkbox" [(ngModel)]="onlyMine" name="onlyMine" /> Only my todos
+      <input type="checkbox" [(ngModel)]="onlyMine" name="onlyMine" /> Mes tâches uniquement
     </label>
   </div>
 

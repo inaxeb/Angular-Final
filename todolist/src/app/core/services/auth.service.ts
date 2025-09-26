@@ -8,10 +8,12 @@ const SESSION_KEY = 'app_session_user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private users = signal<User[]>(storage.get<User[]>(USERS_KEY, [
-    { id: uuid(), email: 'admin@demo.dev', passwordHash: 'admin', role: 'admin' },
-    { id: uuid(), email: 'user@demo.dev',  passwordHash: 'user',  role: 'user'  },
-  ]));
+private users = signal<User[]>(
+storage.get<User[]>(USERS_KEY, [
+{ id: uuid(), email: 'admin@demo.dev', passwordHash: 'admin', role: 'admin' },
+      { id: uuid(), email: 'user@demo.dev',  passwordHash: 'user',  role: 'user'  },
+    ])
+  );
 
   private sessionUser = signal<User | null>(storage.get<User | null>(SESSION_KEY, null));
 
@@ -21,24 +23,51 @@ export class AuthService {
   readonly currentUser = computed(() => this.sessionUser());
   readonly isAdmin = computed(() => this.sessionUser()?.role === 'admin');
 
-  register(email: string, password: string, role: Role = 'user') {
+  listUsers(): User[] { return this.users(); }
+
+  private adminCount(): number {
+    return this.users().filter(u => u.role === 'admin').length;
+  }
+
+  register(email: string, password: string, role: Role = 'user'): void {
     const exists = this.users().some(u => u.email === email);
-    if (exists) throw new Error('Email already exists');
+    if (exists) throw new Error('Email déjà utilisé');
     const user: User = { id: uuid(), email, passwordHash: password, role };
     this.users.set([...this.users(), user]);
     this.sessionUser.set(user);
   }
 
-  login(email: string, password: string) {
+  login(email: string, password: string): void {
     const user = this.users().find(u => u.email === email && u.passwordHash === password);
-    if (!user) throw new Error('Invalid credentials');
+    if (!user) throw new Error('Identifiants invalides');
     this.sessionUser.set(user);
   }
 
-  logout() { this.sessionUser.set(null); }
+  logout(): void {
+    this.sessionUser.set(null);
+  }
 
-  listUsers() { return this.users(); }
-  setRole(userId: string, role: Role) {
-    this.users.set(this.users().map(u => u.id === userId ? { ...u, role } : u));
+  setRole(userId: string, role: Role): void {
+    const before = this.users().find(u => u.id === userId);
+    if (!before) return;
+    if (before.role === 'admin' && role === 'user' && this.adminCount() <= 1) {
+      throw new Error('Impossible de retirer le dernier administrateur');
+    }
+    this.users.set(this.users().map(u => (u.id === userId ? { ...u, role } : u)));
+    if (this.sessionUser()?.id === userId) {
+      this.sessionUser.set({ ...this.sessionUser()!, role });
+    }
+  }
+
+  deleteUser(userId: string): void {
+    const victim = this.users().find(u => u.id === userId);
+    if (!victim) return;
+    if (victim.role === 'admin' && this.adminCount() <= 1) {
+      throw new Error('Impossible de supprimer le dernier administrateur');
+    }
+    this.users.set(this.users().filter(u => u.id !== userId));
+    if (this.sessionUser()?.id === userId) {
+      this.sessionUser.set(null);
+    }
   }
 }
