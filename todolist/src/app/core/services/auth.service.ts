@@ -9,7 +9,6 @@ const SESSION_KEY = 'app_session_user';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private users = signal<User[]>(storage.get<User[]>(USERS_KEY, [
-    // seed
     { id: uuid(), email: 'admin@demo.dev', passwordHash: 'admin', role: 'admin' },
     { id: uuid(), email: 'user@demo.dev',  passwordHash: 'user',  role: 'user'  },
   ]));
