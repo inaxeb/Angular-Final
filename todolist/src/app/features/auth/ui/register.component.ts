@@ -52,8 +52,9 @@ export class RegisterComponent {
     try {
       this.auth.register(email!, password!, role as Role);
       this.router.navigateByUrl('/todos');
-    } catch (e: any) {
-      this.error.set(e.message ?? 'Register failed');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Register failed';
+      this.error.set(msg);
     }
   }
 }

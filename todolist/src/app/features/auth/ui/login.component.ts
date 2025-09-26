@@ -41,8 +41,9 @@ export class LoginComponent {
     try {
       this.auth.login(email!, password!);
       this.router.navigateByUrl('/todos');
-    } catch (e: any) {
-      this.error.set(e.message ?? 'Login failed');
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Login failed';
+      this.error.set(msg);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TodoStore } from '../data/todo.store';
@@ -85,8 +85,7 @@ export class TodoPageComponent {
       status: 'todo',
       dueDate: undefined,
       ownerId: me.id,
-      createdAt: '', updatedAt: ''
-    } as any);
+    });
     this.title = ''; this.description = '';
   }
 

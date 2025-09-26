@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
-import { Todo, TodoStatus, Project } from '../../../core/models';
+import { Todo, Project } from '../../../core/models';
 import { v4 as uuid } from 'uuid';
 import { storage } from '../../../core/storage';
 
